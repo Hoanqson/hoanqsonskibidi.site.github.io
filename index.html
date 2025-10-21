@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Key Generator</title>
+    <title>Roblox Script Key Generator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,59 +11,114 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
         .container {
             background-color: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             text-align: center;
+            max-width: 400px;
         }
         h1 {
             color: #007bff;
         }
         #keyOutput {
-            font-size: 18px;
+            font-size: 20px;
+            font-family: monospace;
             margin: 20px 0;
-            padding: 10px;
+            padding: 15px;
             background-color: #e9ecef;
             border-radius: 5px;
             word-break: break-all;
+            min-height: 20px;
         }
         button {
             background-color: #007bff;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            margin: 5px;
         }
         button:hover {
             background-color: #0056b3;
+        }
+        .copy-btn {
+            background-color: #28a745;
+        }
+        .copy-btn:hover {
+            background-color: #218838;
+        }
+        .instructions {
+            text-align: left;
+            font-size: 14px;
+            color: #666;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Random Key Generator</h1>
-        <p>Nhấn nút để tạo key ngẫu nhiên:</p>
+        <h1>Roblox Script Key Generator</h1>
+        <p>Nhấn nút để tạo key ngẫu nhiên cho script Roblox:</p>
         <div id="keyOutput">Key sẽ hiện ở đây</div>
-        <button onclick="generateKey()">Tạo Key</button>
+        <button onclick="generateKey()">Tạo Key Mới</button>
+        <button class="copy-btn" onclick="copyKey()">Copy Key</button>
+
+        <div class="instructions">
+            <strong>Hướng dẫn sử dụng:</strong><br>
+            1. Copy key trên.<br>
+            2. Paste vào script Roblox (loadstring).<br>
+            3. Script sẽ kiểm tra key với website này.<br>
+            <em>Lưu ý: Key chỉ dùng 1 lần, tạo mới nếu hết hạn!</em>
+        </div>
     </div>
 
     <script>
+        let currentKey = '';
+
         function generateKey() {
-            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let key = '';
-            const keyLength = 8; // Độ dài key, có thể thay đổi
-            for (let i = 0; i < keyLength; i++) {
-                key += characters.charAt(Math.floor(Math.random() * characters.length));
-            }
-            document.getElementById('keyOutput').innerText = key;
+            fetch('https://key-verifier.fly.dev/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({})
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    currentKey = data.key;
+                    document.getElementById('keyOutput').innerText = currentKey;
+                } else {
+                    alert('Lỗi tạo key, thử lại!');
+                }
+            })
+            .catch(err => {
+                console.log('Error:', err);
+                alert('Lỗi kết nối API!');
+            });
         }
+
+        function copyKey() {
+            if (!currentKey) {
+                alert('Tạo key trước nhé!');
+                return;
+            }
+            navigator.clipboard.writeText(currentKey).then(() => {
+                alert('Đã copy key: ' + currentKey);
+            });
+        }
+
+        // Tạo key khi load trang
+        generateKey();
     </script>
 </body>
 </html>
