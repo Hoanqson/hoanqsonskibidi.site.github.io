@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Script Key Generator</title>
+    <title>Roblox Script Key Generator v1.0</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -87,23 +87,28 @@
         let currentKey = '';
 
         function generateKey() {
+            document.getElementById('keyOutput').innerText = 'Đang tạo key...';
             fetch('https://key-verifier.fly.dev/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({})
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('HTTP error: ' + res.status);
+                return res.json();
+            })
             .then(data => {
                 if (data.success) {
                     currentKey = data.key;
                     document.getElementById('keyOutput').innerText = currentKey;
                 } else {
-                    alert('Lỗi tạo key, thử lại!');
+                    document.getElementById('keyOutput').innerText = 'Lỗi tạo key!';
+                    console.error('API error:', data);
                 }
             })
             .catch(err => {
-                console.log('Error:', err);
-                alert('Lỗi kết nối API!');
+                document.getElementById('keyOutput').innerText = 'Lỗi kết nối API!';
+                console.error('Fetch error:', err);
             });
         }
 
